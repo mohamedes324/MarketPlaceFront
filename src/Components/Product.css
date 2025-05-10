@@ -1,0 +1,68 @@
+/* مكونات المنتج */
+.product {
+    width: calc(25% - 20px);
+    background-color: #1A1A1A;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+    box-sizing: border-box;
+    border-radius: 10px;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+}
+
+.product:hover {
+    transform: scale(1.03);
+}
+
+.product img {
+    width: 70%;
+    object-fit: fill;
+    border-radius: 12px;
+}
+
+.name-product {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: whitesmoke;
+}
+
+.price,
+.quantity {
+    font-size: 16px;
+    color: #FFD700;
+}
+
+.product-info {
+    margin-top: 10px;
+}
+
+
+.product-buttons {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.product-buttons button {
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    font-size: 15px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+}
+
+
+.product-buttons button:hover {
+    background-color: #ffd90071;
+}

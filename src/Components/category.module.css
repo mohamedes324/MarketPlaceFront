@@ -1,0 +1,27 @@
+.category {
+    width: calc(25% - 20px);
+    background-color: #1A1A1A;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+    box-sizing: border-box;
+    border-radius: 10px;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+}
+
+.category:hover {
+    transform: scale(1.03);
+}
+
+.categoty-img {
+    width: 70%;
+    object-fit: fill;
+    border-radius: 12px;
+}
+
+.category-name {
+    color: white;
+}
+

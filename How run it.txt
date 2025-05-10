@@ -1,0 +1,4 @@
+dotnet run -> in the folder of backend
+
+
+http://localhost:5161/swagger/index.html

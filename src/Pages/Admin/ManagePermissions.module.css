@@ -1,0 +1,88 @@
+.main {
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 250px;
+    margin-top: 50px;
+}
+
+.sidebar-and-main {
+    display: flex;
+    align-items: start;
+}
+
+.main-permission {
+    display: flex;
+    justify-content: center;
+    background-color: #1A1A1A;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+    width: 50%;
+    margin: auto;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-radius: 12px;
+    /* نفس الشكل */
+}
+
+
+.title{
+    color: white;
+}
+
+.permissionButtons{
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.permissionButton {
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.active {
+    background-color: #D4AF37;
+    color: #121212;
+}
+
+.bottm-part{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.bottm-part-title{
+    text-align: center;
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.checkbox{
+    transform: scale(1.5);
+    cursor: pointer;
+}
+
+.checkbox-name {
+    color: #FFD700;
+    margin-left: 10px;
+    font-size: 16px;
+    cursor: pointer;
+
+}
+
+
+.submit-button{
+    width: 20%;
+    font-size: 18px;
+    padding: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+}

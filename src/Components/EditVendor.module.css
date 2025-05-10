@@ -1,0 +1,15 @@
+.vendor-edit-form{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.alert-part{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alert-input{
+    width: 70%;
+}

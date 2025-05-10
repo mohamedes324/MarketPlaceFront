@@ -1,0 +1,41 @@
+.main {
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-left: 280px;
+    margin-top: 50px;
+}
+
+.sidebar-and-main {
+    display: flex;
+    align-items: start;
+}
+
+.order-box {
+    display: flex;
+    background-color: #1A1A1A;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+    width: 100%;
+    margin: 10px;
+    border-radius: 10px;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+
+.order-part {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.order-part h2 {
+    margin: 10px;
+    color: #D4AF37;
+}
+
+.order-part span {
+    color: white;
+}

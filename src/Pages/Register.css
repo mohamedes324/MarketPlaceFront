@@ -1,0 +1,105 @@
+/* الخلفية */
+.register-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* صندوق الريجستر */
+.register-box {
+    background-color: #1A1A1A;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    margin: 100px auto;
+}
+
+/* العنوان */
+.register-box h2 {
+    margin-bottom: 24px;
+    color: #FFD700;
+}
+
+/* اختيار الدور */
+.role-select {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.role-button {
+    padding: 10px 20px;
+    border: 1px solid #D4AF37;
+    background-color: white;
+    color: #131101;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.role-button.active {
+    background-color: #D4AF37;
+    color: #121212;
+}
+
+/* الحقول */
+.register-input {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    border: 1px solid #D4AF37;
+    background-color: #1C1C1C;
+    color: #FFD700;
+}
+
+.register-input:focus {
+    background-color: #000000;
+    /* اختياري */
+    color: #FFD700;
+    /* اختياري */
+    outline: none;
+    /* ده المهم */
+}
+
+/* الزر */
+.register-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #D4AF37;
+    color: #121212;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.register-button:hover {
+    background-color: #C49B2E;
+    color: #000000;
+}
+
+/* عندك حساب */
+.have-account {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #666;
+}
+
+.have-account a {
+    color: #D4AF37;
+    text-decoration: none;
+}
+
+.have-account a:hover {
+    text-decoration: underline;
+    color: #B8902D;
+}

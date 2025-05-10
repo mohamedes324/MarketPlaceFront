@@ -1,0 +1,15 @@
+.main {
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-left: 280px;
+    margin-top: 50px;
+}
+
+.sidebar-and-main {
+    display: flex;
+    align-items: start;
+}
+

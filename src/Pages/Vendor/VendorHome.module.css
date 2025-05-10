@@ -1,0 +1,32 @@
+.main {
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-left: 280px;
+    margin-top: 50px;
+}
+
+.sidebar-and-main {
+    display: flex;
+    align-items: start;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+.buttons button {
+    width: 40%;
+    padding: 3px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.blur-button {
+    opacity: 0.5;
+    pointer-events: none;
+}

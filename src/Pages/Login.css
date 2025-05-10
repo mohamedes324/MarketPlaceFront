@@ -1,0 +1,80 @@
+/* خلفية الصفحة */
+    .login-page {
+        /* لون هادي */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* صندوق اللوجن */
+.login-box {
+    background-color: #1A1A1A;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);  /* ظل ذهبي ناعم */
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+/* العنوان */
+.login-box h2 {
+    margin-bottom: 24px;
+    color: #f0be63;
+    font-family: 'Poppins', sans-serif;
+}
+
+.login-input {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    border: 1px solid #D4AF37;
+    background-color: #1C1C1C;
+    color: #FFD700;
+}
+
+.login-input:focus {
+    border: 1px solid #D4AF37;
+    background-color: #000000; /* اختياري */
+    color: #FFD700;             /* اختياري */
+    outline: none;              /* ده المهم */
+}
+
+/* الزرار */
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #D4AF37;
+    color: #121212;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #C49B2E;
+    color: #000000;
+}
+
+/* النص اللي تحت */
+.no-account {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #666;
+}
+
+.no-account a {
+    color: #D4AF37;
+    text-decoration: none;
+}
+
+.no-account a:hover {
+    text-decoration: underline;
+    color: #B8902D;
+}
