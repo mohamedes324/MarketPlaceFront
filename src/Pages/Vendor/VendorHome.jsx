@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../../Components/navbar";
 import Sidebar from "../../Components/sidebar";
 import styles from "./VendorHome.module.css";
 import Product from "../../Components/Product";
@@ -9,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import EditVendor from "../../Components/EditVendor";
 import * as Functions from "../../Components/Functions";
 import Popup from "../../Components/Popup";
+import Navbar from "../../Components/Navbar";
+import * as APIs from "../../../services/productService.js";
 
 const VendorHome = () => {
   const [showAlert, setShowAlert] = useState({
@@ -33,64 +34,33 @@ const VendorHome = () => {
 
   // ----------------------------------------------------------------------------------
 
+  // this use new APIs.get and best practice
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchAcceptedProducts = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-          "http://localhost:5161/api/Products/accepted",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
-        const formatted = data.map((item) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          price: item.price,
-          imageUrl: `http://localhost:5161/${item.imageUrl}`,
-          quantity: item.quantity,
-          categoryId: item.categoryId,
-          categoryName: item.categoryName,
-          canBeDeleted: item.canBeDeleted,
-          canBeUpdated: item.canBeUpdated,
-          createdAt: item.createdAt,
-          vendorName: item.vendorName,
-          viewsNumber: item.viewsNumber
-        }));
-
-        setProducts(formatted);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+        const res = await APIs.get(APIs.endpoints.getAcceptProducts);
+        setProducts(res.data)
+      } catch (err) {
+        console.log(err);
       }
     };
 
-    fetchProducts();
-  }, []);
+    fetchAcceptedProducts();
+  },[]);
 
 
+  // best practice APIs.get
   useEffect(() => {
     const fetchVendorPermissions = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5161/api/VendorPermissions/${Functions.getUserId()}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        const response = await APIs.get(APIs.endpoints.getVendorPermissions)
 
         if (response.status === 404) {
-          // لو رجع 404 معناها مفيش صلاحيات للـ Vendor
           console.log("No permissions found for this vendor.");
-          setVendorPermissions([]); // مفيش صلاحيات نعرضهم فاضي
+          setVendorPermissions([]);
         } else if (response.ok) {
-          const data = await response.json();
-          console.log("Vendor Permissions:", data);
+          const data = await response.data;
+          console.log(data)
           setVendorPermissions(data);
         }
       } catch (error) {
@@ -100,6 +70,7 @@ const VendorHome = () => {
 
     fetchVendorPermissions();
   }, []);
+
 
   const productsArray = products.map((product) => {
     return (

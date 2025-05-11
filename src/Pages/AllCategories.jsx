@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../Components/navbar";
+import Navbar from "../Components/Navbar.jsx";
 import styles from "./allcategories.module.css";
 import Sidebar from "../Components/sidebar";
 import { useNavigate } from "react-router-dom";
@@ -9,10 +9,11 @@ import Alert from "../Components/alert";
 import Popup from "../Components/Popup";
 import * as FaIcons from "react-icons/fa";
 import EditCategory from "../Components/EditCategory";
+import * as APIs from "../../services/productService.js";
 
 const AllCategories = () => {
   const role = Functions.getUserRole();
-  const [allCategories, setAllCategories] = useState([]);
+  const [Categories, setCategories] = useState([]);
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = useState({
     status: false,
@@ -23,37 +24,22 @@ const AllCategories = () => {
   const [formData, setFormData] = useState({
     id: 0,
     title: "",
-    img: null, // هنا هتبقى الصورة نفسها مش URL
+    img: null,
   });
+  
+    //  APIs.get and best practice
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchCategories = async () => {
       try {
-        const token = localStorage.getItem("token"); // أو حسب مكان حفظك للتوكن
-        const response = await fetch(`http://localhost:5161/api/Categories`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch Categories");
-        }
-
-        const data = await response.json();
-
-        const formatted = data.map((item) => ({
-          id: item.id,
-          name: item.name,
-          imgUrl: `http://localhost:5161/${item.imgUrl}`, // إضافة الرابط الكامل
-        }));
-
-        setAllCategories(formatted);
+        const res = await APIs.get(APIs.endpoints.getCategories)
+        console.log(res)
+        setCategories(res.data);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Failed to fetch categories:", error);
       }
     };
 
-    fetchProducts();
+    fetchCategories();
   }, []);
 
   const handleChange = (e) => {
@@ -106,7 +92,7 @@ const AllCategories = () => {
     setShowAlert({ status: true, type: "edit" });
   }
 
-  const categoriesArray = allCategories.map((category) => {
+  const categoriesArray = Categories.map((category) => {
     return (
       <Category category={category} key={category.id}>
         <div className="product-buttons">

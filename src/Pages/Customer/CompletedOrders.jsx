@@ -1,29 +1,22 @@
 import React, { useEffect, useState } from "react";
 import styles from "./CompletedOrders.module.css";
-import Product from "../../Components/Product";
-import Navbar from "../../Components/navbar";
+import Navbar from "../../Components/Navbar";
 import Sidebar from "../../Components/sidebar";
-import * as FaIcons from "react-icons/fa";
 import * as Functions from "../../Components/Functions";
+import * as APIs from "../../../services/productService.js";
 
 const CompletedOrders = () => {
   const [orders, setorders] = useState([]);
+
+  // this uses APIs.get but spical case 
   useEffect(() => {
     const fetchorders = async () => {
       try {
-        const token = Functions.getToken();
         const userId = Functions.getUserId();
-        console.log(token);
-        console.log(userId);
-        const response = await fetch(
-          `http://localhost:5161/api/Orders/completed?customerId=${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
+        
+        const response = await APIs.get(`/Orders/completed?customerId=${userId}`);
+
+        const data = response.data;
         console.log(data);
         setorders(data);
       } catch (error) {
@@ -56,7 +49,12 @@ const CompletedOrders = () => {
       <div className={styles["sidebar-and-main"]}>
         <Sidebar />
 
-        <div className={styles.main}>{orderArray}</div>
+        <div className={styles.main}>
+          {orderArray.length === 0 ? (
+              <h1 style={{color:"#FFD700"}}>There aren't any completed orders</h1>
+            ) : (
+              orderArray
+            )}</div>
       </div>
     </div>
   );

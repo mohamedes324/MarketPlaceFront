@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import * as Functions from "../../Components/Functions";
 import Popup from "../../Components/Popup";
 import "./MainHome.css"
+import * as APIs from "../../../services/productService.js";
 
 function MainHome() {
 
@@ -15,45 +16,19 @@ function MainHome() {
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
   const navigate = useNavigate();
 
-    useEffect(() => {
-      const fetchProducts = async () => {
-        const token = localStorage.getItem("token");
-        try {
-          const response = await fetch(
-            "http://localhost:5161/api/Products/accepted",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          const data = await response.json();
-          console.log(data)
-          const formatted = data.map((item) => ({
-            id: item.id,
-            title: item.title,
-            description: item.description,
-            price: item.price,
-            imageUrl: `http://localhost:5161/${item.imageUrl}`,
-            quantity: item.quantity,
-            categoryId: item.categoryId,
-            categoryName: item.categoryName,
-            createdAt: item.createdAt,
-            vendorName: item.vendorName,
-            viewsNumber: item.viewsNumber,
-            isSaved: item.isSaved,
-            canBuy: item.canBuy,
-            isInCart: item.isInCart
-          }));
-          console.log(formatted)
-          setProducts(formatted);
-        } catch (error) {
-          console.error("Error fetching products:", error);
-        }
-      };
-  
-      fetchProducts();
-    }, []);
+  // this use new APIs.get
+  useEffect(() => {
+    const fetchAcceptedProducts = async () => {
+      try {
+        const res = await APIs.get(APIs.endpoints.getAcceptProducts);
+        setProducts(res.data)
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchAcceptedProducts();
+  },[]);
 
   const productsArray = products.map((product) => {
     return (

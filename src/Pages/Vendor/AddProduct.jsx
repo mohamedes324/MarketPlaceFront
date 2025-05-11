@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import Sidebar from "../../Components/sidebar";
-import Navbar from "../../Components/navbar";
+import Navbar from "../../Components/Navbar";
 import styles from "./AddProduct.module.css";
 import { useEffect } from "react";
 import Popup from "../../Components/Popup";
 import * as Functions from "../../Components/Functions";
+import * as APIs from "../../../services/productService.js";
 
 const AddProduct = () => {
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
@@ -19,11 +20,15 @@ const AddProduct = () => {
     categoryId: "",
   });
 
+    // best practice APIs.get
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("http://localhost:5161/api/Categories");
-        const data = await res.json();
+        const res = await APIs.get(APIs.endpoints.getCategories)
+
+        console.log(res)
+
+        const data = await res.data;
         setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);

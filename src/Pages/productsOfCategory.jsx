@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../Components/navbar";
+import Navbar from "../Components/Navbar";
 import Sidebar from "../Components/sidebar";
 import Product from "../Components/Product";
 import styles from "./Vendor/VendorHome.module.css";
@@ -27,6 +27,7 @@ const ProductsOfCategory = () => {
   // ----------------------------------------------------------------------------------
   const role = Functions.getUserRole();
 
+  // its use here only
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -41,23 +42,8 @@ const ProductsOfCategory = () => {
           }
         );
         const data = await response.json();
-        console.log(data);
-        const formatted = data.map((item) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          price: item.price,
+        const formatted = data.map((item) => ({...item,
           imageUrl: `http://localhost:5161/${item.imageUrl}`,
-          quantity: item.quantity,
-          categoryId: item.categoryId,
-          categoryName: item.categoryName,
-          canBeDeleted: item.canBeDeleted,
-          canBeUpdated: item.canBeUpdated,
-          createdAt: item.createdAt,
-          vendorName: item.vendorName,
-          viewsNumber: item.viewsNumber,
-          canBuy: item.canBuy,
-          isInCart: item.isInCart
         }));
 
         setProducts(formatted);

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "../Vendor/AddProduct.module.css";
-import Navbar from "../../Components/navbar";
+import Navbar from "../../Components/Navbar";
 import Sidebar from "../../Components/sidebar";
 import * as Functions from "../../Components/Functions";
 import Popup from "../../Components/Popup";
@@ -9,6 +9,7 @@ const AddCategories = () => {
   const [categoryName, setCategoryName] = useState("");
   const [categoryImage, setCategoryImage] = useState(null);
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -46,7 +47,7 @@ const AddCategories = () => {
       alert("An error occurred while adding the category.");
     }
   };
-
+  
   return (
     <>
         <Popup show={popup.show} message={popup.message} />

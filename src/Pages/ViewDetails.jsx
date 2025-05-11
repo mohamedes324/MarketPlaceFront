@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "./ViewDetails.module.css";
-import Navbar from "../Components/navbar";
+import Navbar from "../Components/Navbar";
 import Sidebar from "../Components/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Functions from "../Components/Functions";

@@ -39,7 +39,7 @@ function Login() {
       if (response.ok) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("refreshToken", data.refreshToken);
-        Functions.startAutoRefresh();
+        // Functions.startAutoRefresh();
 
         const decodedToken = JSON.parse(atob(data.token.split(".")[1])); // فك التوكن للحصول على الـ role
         const role =

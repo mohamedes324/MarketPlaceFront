@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../../Components/navbar";
+import Navbar from "../../Components/Navbar";
 import Product from "../../Components/Product";
 import styles from "./WaitingProducts.module.css";
 import Sidebar from "../../Components/sidebar";
@@ -8,6 +8,7 @@ import * as Functions from "../../Components/Functions";
 import { useNavigate } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
 import Popup from "../../Components/Popup";
+import * as APIs from "../../../services/productService.js";
 
 const WaitingProducts = () => {
   // Stats
@@ -22,44 +23,19 @@ const WaitingProducts = () => {
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
   const navigate = useNavigate();
 
+  // this use APIs.get not endpoint spical case
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const token = localStorage.getItem("token"); // أو حسب مكان حفظك للتوكن
-        const response = await fetch(
-          `http://localhost:5161/api/Products/all-waiting`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-
-        const data = await response.json();
-        const formatted = data.map((item) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          price: item.price,
-          imageUrl: `http://localhost:5161/${item.imageUrl}`,
-          quantity: item.quantity,
-          categoryId: item.categoryId,
-          categoryName: item.categoryName,
-          createdAt: item.createdAt,
-          vendorName: item.vendorName,
-          viewsNumber: item.viewsNumber,
-        }));
-
-        setProducts(formatted);
+        const res = await APIs.get("/api/Products/all-waiting");
+        
+  
+        setProducts(res.data);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
-
+  
     fetchProducts();
   }, []);
 
@@ -93,42 +69,41 @@ const WaitingProducts = () => {
   async function handleAcception(productId) {
     const token = Functions.getToken();
     const adminId = Functions.getUserId();
-
     if (!token || !adminId) {
-      Functions.showPopupWithReload(
-        "Missing token or admin ID",
-        setPopup
-      );
-      return;
+    Functions.showPopupWithReload(
+    "Missing token or admin ID",
+    setPopup
+    );
+    return;
     }
 
     const url = `http://localhost:5161/api/Products/status/${productId}`;
     const body = {
-      rejectionReason: "Accept",
-      status: 1,
-      adminCheckedId: adminId,
+    rejectionReason: "Accept",
+    status: 1,
+    adminCheckedId: adminId,
     };
 
     try {
-      const res = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-      });
+    const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+    });
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
+    if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+    }
 
-      Functions.showPopupWithReload(
-        `Product Operation successfully ✅`,
-        setPopup
-      );
+    Functions.showPopupWithReload(
+    `Product Operation successfully ✅`,
+    setPopup
+    );
     } catch (error) {
-      console.error("Request failed:", error);
+    console.error("Request failed:", error);
     }
   }
 
@@ -234,18 +209,6 @@ const WaitingProducts = () => {
           Reject
         </button>
       </Product>
-      // <Product
-      //   key={product.id}
-      //   product={product}
-      // >
-      //   <button>View Details</button>
-      //   <button
-      //     onClick={()=>{handleAcceptButton(product.id)}}
-      //   >
-      //     ِAccept
-      //   </button>
-      //   <button onClick={()=>{handleRejectButton(product.id)}}>Reject</button>
-      // </Product>
     );
   });
 

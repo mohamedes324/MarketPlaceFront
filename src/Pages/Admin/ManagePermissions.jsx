@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../Components/sidebar";
-import Navbar from "../../Components/navbar";
+import Navbar from "../../Components/Navbar";
 import styles from "./ManagePermissions.module.css";
 import * as Functions from "../../Components/Functions";
 import Popup from "../../Components/Popup";
+import * as APIs from "../../../services/productService.js";
+
+
+// دي تمام 
 
 const ManagePermissions = () => {
   const [formData, setFormData] = useState({
@@ -16,16 +20,12 @@ const ManagePermissions = () => {
   const [allPermissions, setAllPermissions] = useState([]);
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
 
+  // this new APIs.get and best practice 
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const response = await fetch("http://localhost:5161/api/Vendors/all", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        const data = await response.json();
-        setVendors(data);
+        const res = await APIs.get(APIs.endpoints.getAllVendors);
+        setVendors(res.data);
       } catch (error) {
         console.error("Error fetching vendors:", error);
       }
@@ -33,51 +33,39 @@ const ManagePermissions = () => {
     fetchVendors();
   }, []);
 
+  // this use APIs.get not endpoint spical case
   useEffect(() => {
     if (!formData.vendorId) return;
+  
     const fetchVendorPermissions = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5161/api/VendorPermissions/${formData.vendorId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-
-        if (response.status === 404) {
+        const res = await APIs.get(`/api/VendorPermissions/${formData.vendorId}`);
+  
+        if (res.status === 404) {
           setVendorPermissions([]);
-        } else if (response.ok) {
-          const data = await response.json();
-          console.log("Vendor Permissions:", data);
-          setVendorPermissions(data);
+        } else if (res.ok) {
+          setVendorPermissions(res.data);
         }
-      } catch (error) {
-        console.error("Error fetching vendor permissions:", error);
+      } catch (err) {
+        console.error("Error fetching vendor permissions:", err);
       }
     };
-
+  
     fetchVendorPermissions();
   }, [formData.vendorId]);
 
+  // this use APIs.get and best practice 
   useEffect(() => {
     const fetchAllPermissions = async () => {
       try {
-        const response = await fetch("http://localhost:5161/api/Permissions", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
 
-        if (!response.ok) {
+        const res = await APIs.get(APIs.endpoints.getAllPermissions)
+        
+        if (!res.ok) {
           throw new Error("Failed to fetch permissions");
         }
 
-        const data = await response.json();
-        console.log("All Permissions:", data);
+        const data = res.data
         setAllPermissions(data);
       } catch (error) {
         console.error("Error fetching permissions:", error);

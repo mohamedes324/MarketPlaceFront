@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../../Components/navbar";
+import Navbar from "../../Components/Navbar";
 import Sidebar from "../../Components/sidebar";
 import styles from "./customerHome.module.css";
 import Product from "../../Components/Product";
@@ -9,56 +9,27 @@ import { useNavigate } from "react-router-dom";
 import EditVendor from "../../Components/EditVendor";
 import * as Functions from "../../Components/Functions";
 import Popup from "../../Components/Popup";
+import * as APIs from "../../../services/productService.js";
 
 const SavedProducts = () => {
   const [products, setProducts] = useState([]);
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
   const navigate = useNavigate();
 
+  // this use new APIs.get and best practice
   useEffect(() => {
     const fetchSavedProducts = async () => {
       try {
-        const token = localStorage.getItem("token");
-
-        const response = await fetch(
-          "http://localhost:5161/api/SavedProducts",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const data = await response.json();
-        console.log(data);
-        const formatted = data.map((item) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          price: item.price,
-          imageUrl: `http://localhost:5161/${item.imageUrl}`,
-          quantity: item.quantity,
-          categoryId: item.categoryId,
-          categoryName: item.categoryName,
-          createdAt: item.createdAt,
-          vendorName: item.vendorName,
-          viewsNumber: item.viewsNumber,
-          isSaved: item.isSaved,
-          canBuy: item.canBuy,
-          isInCart: item.isInCart
-        }));
-
-        setProducts(formatted);
+        const res = await APIs.get(APIs.endpoints.getSavedProducts);
+  
+        setProducts(res.data);
       } catch (error) {
         console.error("Error fetching saved products:", error);
       }
     };
-
+  
     fetchSavedProducts();
   }, []);
-
   //-------------------------------------------------------------------------------------------------
 
   const productsArray = products.map((product) => {
@@ -115,7 +86,7 @@ const SavedProducts = () => {
 
           <div className={styles.main}>
             {productsArray.length === 0 ? (
-              <h1>There aren't any saved products</h1>
+              <h1 style={{color:"#FFD700"}}>There aren't any saved products</h1>
             ) : (
               productsArray
             )}

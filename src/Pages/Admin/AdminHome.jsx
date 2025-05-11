@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar from "../../Components/navbar";
 import Sidebar from "../../Components/sidebar";
 import styles from "./adminHome.module.css";
 import Product from "../../Components/Product";
@@ -8,6 +7,8 @@ import Alert from "../../Components/alert";
 import * as Functions from "../../Components/Functions";
 import { useNavigate } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
+import * as APIs from "../../../services/productService.js";
+import Navbar from "../../Components/Navbar.jsx";
 
 const AdminHome = () => {
   const [showAlert, setShowAlert] = useState({
@@ -16,53 +17,24 @@ const AdminHome = () => {
     ProductId: 0,
   });
 
-  const [myProducts, setMyProducts] = useState([]);
+  const [myProducts, setProducts] = useState([]);
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
   const navigate = useNavigate();
 
+  //--------------------------------------------------------------------------------
+
+  // this use new APIs.get
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchAcceptedProducts = async () => {
       try {
-        const token = localStorage.getItem("token"); 
-        const response = await fetch(
-          `http://localhost:5161/api/Products/accepted`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-
-        const data = await response.json();
-
-        const formatted = data.map((item) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          price: item.price,
-          imageUrl: `http://localhost:5161/${item.imageUrl}`,
-          quantity: item.quantity,
-          categoryId: item.categoryId,
-          categoryName: item.categoryName,
-          canBeDeleted: item.canBeDeleted,
-          canBeUpdated: item.canBeUpdated,
-          createdAt: item.createdAt,
-          vendorName: item.vendorName,
-          viewsNumber: item.viewsNumber,
-        }));
-
-        setMyProducts(formatted);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+        const res = await APIs.get(APIs.endpoints.getAcceptProducts);
+        setProducts(res.data)
+      } catch (err) {
+        console.log(err);
       }
     };
-
-    fetchProducts();
-  }, []);
+    fetchAcceptedProducts();
+  },[]);
 
   const productsArray = myProducts.map((product) => {
     return (
@@ -77,7 +49,10 @@ const AdminHome = () => {
             <FaIcons.FaEye />
           </button>
 
-          <button className={product.canBeDeleted === false ? styles["blur-button"] :""}
+          <button
+            className={
+              product.canBeDeleted === false ? styles["blur-button"] : ""
+            }
             title="Delete"
             onClick={() => {
               handleDeleteButton(product);
@@ -85,15 +60,16 @@ const AdminHome = () => {
           >
             <FaIcons.FaTrash />{" "}
           </button>
-          <button title="History" >
+          <button title="History">
             <FaIcons.FaHistory />{" "}
           </button>
         </div>
       </Product>
     );
   });
+  
   function handleDeleteButton(product) {
-      setShowAlert({ status: true, type: "delete", productId: product.id });
+    setShowAlert({ status: true, type: "delete", productId: product.id });
   }
 
   async function handleDeletion(id) {
@@ -166,7 +142,7 @@ const AdminHome = () => {
           </div>
         </Alert>
       )}
-  
+
       <div className={`${popup.show ? "blurred-container" : ""}`}>
         <Navbar />
 

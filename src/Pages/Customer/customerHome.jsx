@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import EditVendor from "../../Components/EditVendor";
 import * as Functions from "../../Components/Functions";
 import Popup from "../../Components/Popup";
+import * as APIs from "../../../services/productService.js";
 
 const CustomerHome = () => {
   const [products, setProducts] = useState([]);
@@ -19,60 +20,28 @@ const CustomerHome = () => {
 
   // ----------------------------------------------------------------------------------
 
-    useEffect(() => {
-      const fetchProducts = async () => {
-        const token = localStorage.getItem("token");
-        try {
-          const response = await fetch(
-            "http://localhost:5161/api/Products/accepted",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          const data = await response.json();
-          console.log(data)
-          const formatted = data.map((item) => ({
-            id: item.id,
-            title: item.title,
-            description: item.description,
-            price: item.price,
-            imageUrl: `http://localhost:5161/${item.imageUrl}`,
-            quantity: item.quantity,
-            categoryId: item.categoryId,
-            categoryName: item.categoryName,
-            createdAt: item.createdAt,
-            vendorName: item.vendorName,
-            viewsNumber: item.viewsNumber,
-            isSaved: item.isSaved,
-            canBuy: item.canBuy,
-            isInCart: item.isInCart
-          }));
-          console.log(formatted)
-          setProducts(formatted);
-        } catch (error) {
-          console.error("Error fetching products:", error);
-        }
-      };
-  
-      fetchProducts();
-    }, []);
+  // this use new APIs.get and best practice
+  useEffect(() => {
+    const fetchAcceptedProducts = async () => {
+      try {
+        const res = await APIs.get(APIs.endpoints.getAcceptProducts);
+        setProducts(res.data)
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchAcceptedProducts();
+  },[]);
 
   
+  // this use new APIs.get and best practice
   const fetchSavedProducts = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5161/api/SavedProducts", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await APIs.get(APIs.endpoints.getSavedProducts)
 
-      const data = await response.json();
-      console.log(data)
-      setSavedProducts(data);
+      console.log(res.data)
+      setSavedProducts(res.data);
     } catch (error) {
       console.error("Error fetching saved products:", error);
     }
@@ -165,7 +134,7 @@ const CustomerHome = () => {
           product.id === productId ? { ...product, isSaved: true } : product
         )
       );
-      await fetchSavedProducts();
+      // await fetchSavedProducts();
     } catch (error) {
       console.error("Error adding product to saved:", error);
     }

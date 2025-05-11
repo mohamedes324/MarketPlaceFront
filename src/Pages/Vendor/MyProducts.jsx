@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../../Components/navbar";
+import Navbar from "../../Components/Navbar.jsx";
 import Sidebar from "../../Components/sidebar";
 import styles from "./MyProducts.module.css";
 import Product from "../../Components/Product";
 import * as Functions from "../../Components/Functions";
 import Alert from "../../Components/alert";
-
-import { getUserId } from "../../Components/Functions";
 import * as FaIcons from "react-icons/fa";
 import Popup from "../../Components/Popup";
 import EditVendor from "../../Components/EditVendor";
+import * as APIs from "../../../services/productService.js";
 
 const MyProducts = () => {
   // I must get the id of the vendor and go to products database to get myProducts
@@ -31,77 +30,37 @@ const MyProducts = () => {
 
   const navigate = useNavigate();
 
-  const vendorId = getUserId();
-
-  const role = Functions.getUserRole();
-
+  // best practice APIs.get
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchMyProducts = async () => {
       try {
-        const token = localStorage.getItem("token"); // أو حسب مكان حفظك للتوكن
-        const response = await fetch(
-          `http://localhost:5161/api/Products/all/vendor/${vendorId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await APIs.get(APIs.endpoints.getMyProducts);
 
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
 
-        const data = await response.json();
-        console.log(data); // هذا سيساعدك في رؤية بنية الـ JSON التي تأتي من السيرفر
-
-        const formatted = data.map((item) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          price: item.price,
-          imageUrl: `http://localhost:5161/${item.imageUrl}`,
-          quantity: item.quantity,
-          categoryId: item.categoryId,
-          categoryName: item.categoryName,
-          vendorName: item.vendorName,
-          canBeDeleted: item.canBeDeleted,
-          canBeUpdated: item.canBeUpdated,
-          approvalStatus: item.approvalStatus,
-          createdAt: item.createdAt,
-          viewsNumber: item.viewsNumber,
-          rejectionReason: item.rejectionReason,
-        }));
-
-        console.log(formatted);
-        setMyProducts(formatted);
+        setMyProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
 
-    fetchProducts();
+    fetchMyProducts();
   }, []);
 
+
+  // best practice APIs.get
   useEffect(() => {
     const fetchVendorPermissions = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5161/api/VendorPermissions/${Functions.getUserId()}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        const response = await APIs.get(APIs.endpoints.getVendorPermissions)
 
         if (response.status === 404) {
-          // لو رجع 404 معناها مفيش صلاحيات للـ Vendor
           console.log("No permissions found for this vendor.");
-          setVendorPermissions([]); // مفيش صلاحيات نعرضهم فاضي
+          setVendorPermissions([]);
         } else if (response.ok) {
-          const data = await response.json();
-          console.log("Vendor Permissions:", data);
+          const data = await response.data;
           setVendorPermissions(data);
         }
       } catch (error) {

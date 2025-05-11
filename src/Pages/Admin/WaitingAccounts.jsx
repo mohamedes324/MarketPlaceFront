@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../../Components/navbar";
+import Navbar from "../../Components/Navbar";
 import Product from "../../Components/Product";
 import styles from "./WaitingAccounts.module.css";
 import Sidebar from "../../Components/sidebar";
@@ -7,6 +7,7 @@ import Alert from "../../Components/alert";
 import * as Functions from "../../Components/Functions";
 import * as FaIcons from "react-icons/fa";
 import Popup from "../../Components/Popup";
+import * as APIs from "../../../services/productService.js";
 
 const WaitingAccounts = () => {
   // Stats
@@ -20,32 +21,25 @@ const WaitingAccounts = () => {
   const [rejectReason, setRejectReason] = useState("");
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
 
+  // this use APIs.get not endpoint spical case
   useEffect(() => {
-    const fetchVendors = async () => {
+    const fetchWaitingAccounts = async () => {
       try {
-        const token = localStorage.getItem("token"); // أو حسب مكان حفظك للتوكن
-        const response = await fetch(
-          `http://localhost:5161/api/Vendors/waiting`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
+        const res = await APIs.get("/api/Vendors/waiting");
+  
+        if (!res.ok) {
+          throw new Error("Failed to fetch vendors");
         }
-        const data = await response.json();
-        console.log(data);
-        setVendors(data);
+  
+        setVendors(res.data);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching vendors:", error);
       }
     };
-
-    fetchVendors();
+  
+    fetchWaitingAccounts();
   }, []);
+
 
   async function handleAcception(vendorId) {
     const token = Functions.getToken();
@@ -107,7 +101,6 @@ const WaitingAccounts = () => {
 
   const vendorsArray = vendors.map((vendor) => {
     return (
-      <>
         <div key={vendor.id} className={styles["vendor-box"]}>
           <div className={styles["vendor-part-text"]}>
             <h2>
@@ -137,7 +130,6 @@ const WaitingAccounts = () => {
             </button>
           </div>
         </div>
-      </>
     );
   });
 

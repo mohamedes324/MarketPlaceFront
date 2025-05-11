@@ -1,46 +1,46 @@
 // import * as Functions from "/Components/Functions.js"
 
 
-export const startAutoRefresh = () => {
-    const refresh = async () => {
-        const refreshToken = localStorage.getItem("refreshToken");
+// export const startAutoRefresh = () => {
+//     const refresh = async () => {
+//         const refreshToken = localStorage.getItem("refreshToken");
 
-        if (!refreshToken) {
-            console.warn("No refresh token found.");
-            return;
-        }
+//         if (!refreshToken) {
+//             console.warn("No refresh token found.");
+//             return;
+//         }
 
-        try {
-            const response = await fetch("http://localhost:5161/api/Auth/refresh-token", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(refreshToken),
-            });
+//         try {
+//             const response = await fetch("http://localhost:5161/api/Auth/refresh-token", {
+//                 method: "POST",
+//                 headers: {
+//                     "Content-Type": "application/json",
+//                 },
+//                 body: JSON.stringify(refreshToken),
+//             });
 
-            if (response.ok) {
-                const data = await response.json();
+//             if (response.ok) {
+//                 const data = await response.json();
             
-                if (data.token && data.refreshToken) {
-                    localStorage.setItem("token", data.token);
-                    localStorage.setItem("refreshToken", data.refreshToken);
-                    console.log("🔁 Tokens refreshed and saved.");
-                } else {
-                    console.warn("⚠️ Response missing token or refreshToken:", data);
-                }
-            } else {
-                console.error("❌ Refresh token request failed with status:", response.status);
-            }
+//                 if (data.token && data.refreshToken) {
+//                     localStorage.setItem("token", data.token);
+//                     localStorage.setItem("refreshToken", data.refreshToken);
+//                     console.log("🔁 Tokens refreshed and saved.");
+//                 } else {
+//                     console.warn("⚠️ Response missing token or refreshToken:", data);
+//                 }
+//             } else {
+//                 console.error("❌ Refresh token request failed with status:", response.status);
+//             }
 
-        } catch (error) {
-            console.error("🔴 Error refreshing token:", error);
-        }
-    };
+//         } catch (error) {
+//             console.error("🔴 Error refreshing token:", error);
+//         }
+//     };
 
-    // كل دقيقة (60,000 ملي ثانية)
-    setInterval(refresh, 60 * 1000);
-};
+//     // كل دقيقة (60,000 ملي ثانية)
+//     setInterval(refresh, 60 * 1000);
+// };
 
 export const getToken = () => {
 

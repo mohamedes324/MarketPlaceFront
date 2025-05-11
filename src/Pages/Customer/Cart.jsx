@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../../Components/navbar";
+import Navbar from "../../Components/Navbar";
 import Sidebar from "../../Components/sidebar";
 import styles from "./cart.module.css";
 import Product from "../../Components/Product";
@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import * as Functions from "../../Components/Functions";
 import Popup from "../../Components/Popup";
 import Alert from "../../Components/alert";
+import * as APIs from "../../../services/productService.js";
 
 const Cart = () => {
   const [form, setForm] = useState({
@@ -25,20 +26,14 @@ const Cart = () => {
   const navigate = useNavigate();
   const token = Functions.getToken();
 
+  // this use APIs.get and spical case 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5161/api/Orders/incart",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
+        const res = await APIs.get("/Orders/incart");
+        const data = res.data;
         console.log(data);
-
+  
         const cartInfo = {
           customerId: data.customerId,
           orderId: data.id,
@@ -47,8 +42,9 @@ const Cart = () => {
           status: data.status,
           totalAmount: data.totalAmount,
         };
-
+  
         setCartInfo(cartInfo);
+  
         const formatted = data.orderItems.map((item) => ({
           productId: item.productId,
           id: item.id,
@@ -58,13 +54,13 @@ const Cart = () => {
           orderItemQuantity: item.orderItemQuantity,
           productQuantity: item.productQuantity,
         }));
-
+  
         setProductss(formatted);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
-
+  
     fetchProducts();
   }, []);
 
