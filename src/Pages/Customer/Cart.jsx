@@ -9,6 +9,7 @@ import * as Functions from "../../Components/Functions";
 import Popup from "../../Components/Popup";
 import Alert from "../../Components/alert";
 import * as APIs from "../../../services/productService.js";
+import ViewDetailsButton from "../../Components/productIcons/ViewDetilesButton.jsx";
 
 const Cart = () => {
   const [form, setForm] = useState({
@@ -30,7 +31,7 @@ const Cart = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await APIs.get("/Orders/incart");
+        const res = await APIs.get("/api/Orders/incart");
         const data = res.data;
         console.log(data);
   
@@ -68,15 +69,13 @@ const Cart = () => {
     return (
       <Product key={product.id} product={product}>
         <div className="product-buttons">
-          <button
-            title="View Detiles"
-            onClick={() => handleViewButton(product)}
-          >
-            <FaIcons.FaEye />
-          </button>
-          <button title="History">
-            <FaIcons.FaHistory />
-          </button>
+        <ViewDetailsButton
+            handleViewButton={() => {
+              Functions.handleViewButton(product, navigate, setPopup);
+            }}
+            product={product}
+          />{" "}
+
         </div>
         <div className={styles.counterContainer}>
           {product.orderItemQuantity > 1 ? (
@@ -112,28 +111,8 @@ const Cart = () => {
     );
   });
 
-  async function handleViewButton(product) {
-    try {
-      const response = await fetch(
-        `http://localhost:5161/api/Products/views/${product.id}`,
-        {
-          method: "POST",
-        }
-      );
 
-      if (!response.ok) {
-        throw new Error("Failed to increase views");
-      }
-
-      navigate("/ViewDetails", { state: { product } });
-    } catch (error) {
-      Functions.showPopupWithoutReload(
-        `Something went wrong while updating views : ${error}`,
-        setPopup
-      );
-    }
-  }
-
+  // special case 
   const updateQuantity = async (id, newQuantity) => {
     console.log(`Sending PUT for item ${id} with quantity ${newQuantity}`); // 👈 عشان تتأكد إنك بعت القيمة صح
 
@@ -236,6 +215,7 @@ const Cart = () => {
 
     console.log("Sending body:", body);
 
+    // special case 
     try {
       const response = await fetch(
         `http://localhost:5161/api/Orders/${orderId}/confirm`,
@@ -260,7 +240,7 @@ const Cart = () => {
 
       setPopup({
         show: true,
-        message: "✅Registration successful! Redirecting...",
+        message: "✅Buy successful!",
       });
       setTimeout(() => {
         navigate("/CompletedOrders"); // ينتقل بعد ثانيتين

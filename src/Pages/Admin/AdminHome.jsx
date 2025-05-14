@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
 import * as APIs from "../../../services/productService.js";
 import Navbar from "../../Components/Navbar.jsx";
+import ViewDetailsButton from "../../Components/productIcons/ViewDetilesButton.jsx";
 
 const AdminHome = () => {
   const [showAlert, setShowAlert] = useState({
@@ -28,26 +29,24 @@ const AdminHome = () => {
     const fetchAcceptedProducts = async () => {
       try {
         const res = await APIs.get(APIs.endpoints.getAcceptProducts);
-        setProducts(res.data)
+        setProducts(res.data);
       } catch (err) {
         console.log(err);
       }
     };
     fetchAcceptedProducts();
-  },[]);
+  }, []);
 
   const productsArray = myProducts.map((product) => {
     return (
       <Product key={product.id} product={product}>
         <div className="product-buttons">
-          <button
-            title="View Detiles"
-            onClick={() => {
-              handleViewButton(product);
+          <ViewDetailsButton
+            handleViewButton={() => {
+              Functions.handleViewButton(product, navigate, setPopup);
             }}
-          >
-            <FaIcons.FaEye />
-          </button>
+            product={product}
+          />
 
           <button
             className={
@@ -60,14 +59,11 @@ const AdminHome = () => {
           >
             <FaIcons.FaTrash />{" "}
           </button>
-          <button title="History">
-            <FaIcons.FaHistory />{" "}
-          </button>
         </div>
       </Product>
     );
   });
-  
+
   function handleDeleteButton(product) {
     setShowAlert({ status: true, type: "delete", productId: product.id });
   }
@@ -93,27 +89,6 @@ const AdminHome = () => {
     }
   }
 
-  async function handleViewButton(product) {
-    try {
-      const response = await fetch(
-        `http://localhost:5161/api/Products/views/${product.id}`,
-        {
-          method: "POST",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to increase views");
-      }
-
-      navigate("/ViewDetails", { state: { product } });
-    } catch (error) {
-      Functions.showPopupWithoutReload(
-        `Something went wrong while updating views : ${error}`,
-        setPopup
-      );
-    }
-  }
 
   return (
     <>

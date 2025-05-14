@@ -24,10 +24,17 @@
     color: #D4AF37;
 }
 
+.navbar-center {
+    width: 50%;
+    position: relative;
+}
+
+
 .search-input {
-    width: 1000px;
+    width: 80%;
     padding: 8px;
-    border-radius: 10px;
+    font-size: 15px;
+    border-radius: 30px 0px 0px 30px ;
     border: 1px solid #D4AF37;
     background-color: #1C1C1C;
     color: #FFD700;
@@ -37,6 +44,16 @@
     background-color: #000000;
     color: #FFD700;
     outline: none;
+}
+
+.search-icon-button {
+    position: absolute;
+    top: 0;
+    width: 10%;
+    border-radius: 0px 30px 30px 0px ;
+    padding: 8px;
+    border: none;
+    font-size: 16px;
 }
 
 .login-text {
@@ -54,4 +71,56 @@
 .login-text:hover {
     background-color: #C49B2E;
     color: #000000;
+}
+
+.notification-container {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: #3b3b3b;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+    color: white;
+    cursor: pointer;
+}
+
+
+
+.notification-list-container {
+    top: 55px;
+    right: 10px;
+    background-color: #1A1A1A;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+    position: fixed;
+    height: 90vh;
+    width: 20%;
+    border-radius: 10px;
+    box-sizing: border-box;
+    /* transition: transform .5s ease-in-out ; */
+    overflow-y: scroll;
+}
+
+.notification-list-container-not-active{
+    transform:translateX(400px) ;
+    /* transition: transform .5s ease-in-out; */
+    display: none;
+}
+
+
+.notification-list {
+    width: 90%;
+    background-color: #3f3e3e;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+    border-radius: 5px;
+    color: #D4AF37;
+    padding: 5px;
+    box-sizing: border-box;
+    margin: 10px auto;
+}
+
+/* active button */
+.active {
+    background-color: #C49B2E;
 }

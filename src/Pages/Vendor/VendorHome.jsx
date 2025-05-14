@@ -10,6 +10,10 @@ import * as Functions from "../../Components/Functions";
 import Popup from "../../Components/Popup";
 import Navbar from "../../Components/Navbar";
 import * as APIs from "../../../services/productService.js";
+import ViewDetailsButton from "../../Components/productIcons/ViewDetilesButton.jsx";
+import EditButton from "../../Components/productIcons/EditButton.jsx";
+import DeleteButton from "../../Components/productIcons/DeleteButton.jsx";
+import HistoryButton from "../../Components/productIcons/HistoryButton.jsx";
 
 const VendorHome = () => {
   const [showAlert, setShowAlert] = useState({
@@ -17,7 +21,7 @@ const VendorHome = () => {
     type: "",
     productId: 0,
   });
-
+  const [history, setHistory] = useState([]);
   const [products, setProducts] = useState([]);
   const [vendorPermissions, setVendorPermissions] = useState([]);
 
@@ -39,28 +43,28 @@ const VendorHome = () => {
     const fetchAcceptedProducts = async () => {
       try {
         const res = await APIs.get(APIs.endpoints.getAcceptProducts);
-        setProducts(res.data)
+        setProducts(res.data);
       } catch (err) {
         console.log(err);
       }
     };
 
     fetchAcceptedProducts();
-  },[]);
-
+  }, []);
 
   // best practice APIs.get
   useEffect(() => {
     const fetchVendorPermissions = async () => {
       try {
-        const response = await APIs.get(APIs.endpoints.getVendorPermissions)
+        const vendorId = Functions.getUserId();
+        const endpoint = APIs.endpoints.getVendorPermissions(vendorId);
+        const response = await APIs.get(endpoint);
 
         if (response.status === 404) {
           console.log("No permissions found for this vendor.");
           setVendorPermissions([]);
         } else if (response.ok) {
           const data = await response.data;
-          console.log(data)
           setVendorPermissions(data);
         }
       } catch (error) {
@@ -71,41 +75,77 @@ const VendorHome = () => {
     fetchVendorPermissions();
   }, []);
 
-
   const productsArray = products.map((product) => {
     return (
       <Product key={product.id} product={product}>
         <div className="product-buttons">
-          <button
-            title="View Detiles"
-            onClick={() => {
-              handleViewButton(product);
+          <ViewDetailsButton
+            handleViewButton={() => {
+              Functions.handleViewButton(product, navigate, setPopup);
             }}
-          >
-            <FaIcons.FaEye />
-          </button>
-          <button className={product.canBeUpdated === false ? styles["blur-button"] :""}
-            title="Edit"
-            onClick={() => {
-              handleEditButton(product);
+            product={product}
+          />
+          <EditButton
+            handleEditButton={() => {
+              Functions.handleEditVendorButton(
+                product,
+                vendorPermissions,
+                setPopup,
+                setShowAlert,
+                setFormData
+              );
             }}
-          >
-            <FaIcons.FaEdit />
-          </button>
-
-          <button className={product.canBeDeleted === false ? styles["blur-button"] :""}
-            title="Delete"
-            onClick={() => {
-              handleDeleteButton(product);
+            product={product}
+          />
+          <DeleteButton
+            handleDeleteButton={() => {
+              Functions.handleDeleteVendorButton(
+                product,
+                vendorPermissions,
+                setPopup,
+                setShowAlert
+              );
             }}
-          >
-            <FaIcons.FaTrash />{" "}
-          </button>
-          <button title="History" >
-            <FaIcons.FaHistory />{" "}
-          </button>
+            product={product}
+          />
+          <HistoryButton
+            handleHistoryButton={() => {
+              Functions.handleHistoryButton(
+                product.id,
+                setPopup,
+                setHistory,
+                setShowAlert
+              );
+            }}
+            productId={product.id}
+          />
         </div>
       </Product>
+    );
+  });
+
+  const historyArray = history.map((order) => {
+    return (
+      <div className={styles.history} key={order.customerId}>
+        <h2
+          className={styles["history-title"]}
+          onClick={() => {
+            handleCustomerOrder(order.customerId);
+          }}
+        >
+          {order.customerName}
+        </h2>
+        <div className={styles["history-details"]}>
+          <h3 className={styles["details-text"]}>
+            <span style={{ color: "white" }}>Quantity: </span>
+            {order.quantity}
+          </h3>
+          <h3 className={styles["details-text"]}>
+            <span style={{ color: "white" }}>Orderd from: </span>
+            {Functions.timeAgo(order.orderedAt)}
+          </h3>
+        </div>
+      </div>
     );
   });
 
@@ -117,21 +157,6 @@ const VendorHome = () => {
     }));
   };
 
-  function handleDeleteButton(product) {
-    const hasDeletePermission = vendorPermissions.some(p => p.permissionId === 4); // 4 = delete permission ID
-  
-    if (hasDeletePermission) {
-      // عنده صلاحية، نفتح الـ alert
-      setShowAlert({ status: true, type: "delete", productId: product.id });
-    } else {
-      // مفيش صلاحية، نظهر رسالة فقط
-      Functions.showPopupWithoutReload(
-        "You don't have the approval to Delete",
-        setPopup
-      );
-    }
-  }
-  
   async function handleDeletion(id) {
     try {
       const response = await fetch(`http://localhost:5161/api/Products/${id}`, {
@@ -153,47 +178,46 @@ const VendorHome = () => {
     }
   }
 
-  function handleEditButton(product) {
-    const hasEditPermission = vendorPermissions.some(p => p.permissionId === 3); // 3 = edit permission ID
-    if (!hasEditPermission) {
-      setShowAlert({ status: true, type: "edit" });
-      Functions.showPopupWithoutReload(
-        "You don't have the approval to Edit",
-        setPopup
-      );
-      return;
-    }
-  
-    setFormData({
-      id: product.id,
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      quantity: product.quantity,
-      categoryId: product.categoryId,
-    });
+  // this use new APIs.post
+  // async function handleViewButton(product) {
+  //   try {
+  //     const response = await APIs.post(
+  //       `${APIs.endpoints.postViewProduct}${product.id}`
+  //     );
 
-    setShowAlert({ status: true, type: "edit", productId: product.id });
+  //     // المفروض انو بيرجع علي هيئة نص عادي
+  //     if (!response.ok) {
+  //       throw new Error(`${response.data}`);
+  //     }
 
+  //     navigate("/ViewDetails", { state: { product } });
+  //   } catch (error) {
+  //     Functions.showPopupWithoutReload(
+  //       `Something went wrong while updating views : ${error}`,
+  //       setPopup
+  //     );
+  //   }
+  // }
+
+  // async function handleHistoryButton(productId) {
+  //   const endpoint = APIs.endpoints.getProductHistory(productId);
+  //   const res = await APIs.get(endpoint);
+
+  //   if (res.status === 403) {
+  //     Functions.showPopupWithoutReload("You don't have the approval", setPopup);
+  //     return;
+  //   } else if (!res.ok) {
+  //     Functions.showPopupWithoutReload(res.data, setPopup);
+  //     return;
+  //   }
+  //   setHistory(res.data);
+  //   setShowAlert({ status: true, type: "history", productId: productId });
+  // }
+
+  async function handleCustomerOrder(customerId) {
+    navigate("/CompletedOrders", { state: { customerId } });
   }
 
-  async function handleViewButton(product) {
-    try {
-      const response = await fetch(`http://localhost:5161/api/Products/views/${product.id}`, {
-        method: "POST",
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to increase views");
-      }
-  
-      navigate("/ViewDetails", { state: { product } });
-  
-    } catch (error) {
-      Functions.showPopupWithoutReload(`Something went wrong while updating views : ${error}`, setPopup);
-    }
-  }
-  
   return (
     <>
       <Popup show={popup.show} message={popup.message} />
@@ -233,6 +257,11 @@ const VendorHome = () => {
             />
           </Alert>
         )}
+
+      {showAlert.status && showAlert.type === "history" && (
+        <Alert onClose={() => setShowAlert(false)}>{historyArray}</Alert>
+      )}
+
       <div className={`${popup.show ? "blurred-container" : ""}`}>
         <Navbar />
 

@@ -3,6 +3,7 @@ import Navbar from "../Components/Navbar";
 import Sidebar from "../Components/sidebar";
 import Product from "../Components/Product";
 import styles from "./Vendor/VendorHome.module.css";
+import styless from "./CompletedOrderProducts.module.css";
 import Alert from "../Components/alert";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Functions from "../Components/Functions";
@@ -15,7 +16,7 @@ import DeleteButton from "../Components/productIcons/DeleteButton.jsx";
 import HistoryButton from "../Components/productIcons/HistoryButton.jsx";
 import EditVendor from "../Components/EditVendor.jsx";
 
-const ProductsOfCategory = () => {
+const CompletedOrderProducts = () => {
   const location = useLocation();
   const [showAlert, setShowAlert] = useState({
     status: false,
@@ -39,7 +40,7 @@ const ProductsOfCategory = () => {
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
 
   const navigate = useNavigate();
-  const categoryId = location.state;
+  const { orderId } = location.state;
 
   // ----------------------------------------------------------------------------------
   const role = Functions.getUserRole();
@@ -51,7 +52,7 @@ const ProductsOfCategory = () => {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          `http://localhost:5161/api/Products/accepted/category/id/${categoryId}`,
+          `http://localhost:5161/api/Orders/details/${orderId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -59,9 +60,14 @@ const ProductsOfCategory = () => {
           }
         );
         const data = await response.json();
-        const formatted = data.map((item) => ({
-          ...item,
-          imageUrl: `http://localhost:5161/${item.imageUrl}`,
+        console.log(data.orderItems);
+        const formatted = data.orderItems.map((item) => ({
+          id: item.productId,
+          imageUrl: `http://localhost:5161/${item.productImageUrl}`,
+          title: item.productTitle,
+          price: item.productPrice,
+          orderItemQuantity: item.orderItemQuantity,
+          orderItemTotalPrice: item.orderItemTotalPrice,
         }));
 
         setProducts(formatted);
@@ -99,7 +105,21 @@ const ProductsOfCategory = () => {
 
   const productsArray = products.map((product) => {
     return (
-      <Product key={product.id} product={product}>
+      <div className="product">
+        <img
+          src={product.imageUrl}
+          alt={product.title}
+          className="product-image"
+        />
+
+        <div className="name-product">{product.title}</div>
+
+        <div className={styless["orderItem-info"]}>
+
+          <div className="orderItemQuantity"><span style={{color:"white"}}>Product Quantity:</span> {product.orderItemQuantity}</div>
+          <div className="orderItemTotalPrice"><span style={{color:"white"}}>Product total Price:</span> ${product.orderItemTotalPrice}</div>
+        </div>
+
         <div className="product-buttons">
           <ViewDetailsButton
             handleViewButton={() => {
@@ -150,34 +170,34 @@ const ProductsOfCategory = () => {
             />
           )}
         </div>
-      </Product>
+      </div>
     );
   });
 
-      const historyArray = history.map((order) => {
-        return (
-          <div className={styles.history} key={order.customerId}>
-            <h2
-              className={styles["history-title"]}
-              onClick={() => {
-                handleCustomerOrder(order.customerId);
-              }}
-            >
-              {order.customerName}
-            </h2>
-            <div className={styles["history-details"]}>
-              <h3 className={styles["details-text"]}>
-                <span style={{ color: "white" }}>Quantity: </span>
-                {order.quantity}
-              </h3>
-              <h3 className={styles["details-text"]}>
-                <span style={{ color: "white" }}>Orderd from: </span>
-                {Functions.timeAgo(order.orderedAt)}
-              </h3>
-            </div>
-          </div>
-        );
-      });
+  const historyArray = history.map((order) => {
+    return (
+      <div className={styles.history} key={order.customerId}>
+        <h2
+          className={styles["history-title"]}
+          onClick={() => {
+            handleCustomerOrder(order.customerId);
+          }}
+        >
+          {order.customerName}
+        </h2>
+        <div className={styles["history-details"]}>
+          <h3 className={styles["details-text"]}>
+            <span style={{ color: "white" }}>Quantity: </span>
+            {order.quantity}
+          </h3>
+          <h3 className={styles["details-text"]}>
+            <span style={{ color: "white" }}>Orderd from: </span>
+            {Functions.timeAgo(order.orderedAt)}
+          </h3>
+        </div>
+      </div>
+    );
+  });
 
   function handleDeleteButton(product) {
     setShowAlert({ status: true, type: "delete", productId: product.id });
@@ -216,7 +236,6 @@ const ProductsOfCategory = () => {
     navigate("/CompletedOrders", { state: { customerId } });
   }
 
-
   return (
     <>
       <Popup show={popup.show} message={popup.message} />
@@ -224,7 +243,7 @@ const ProductsOfCategory = () => {
       {showAlert.status && showAlert.type === "history" && (
         <Alert onClose={() => setShowAlert(false)}>{historyArray}</Alert>
       )}
-      
+
       {showAlert.status &&
         formData.title !== "" &&
         showAlert.type === "edit" && (
@@ -280,4 +299,4 @@ const ProductsOfCategory = () => {
   );
 };
 
-export default ProductsOfCategory;
+export default CompletedOrderProducts;

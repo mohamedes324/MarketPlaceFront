@@ -30,3 +30,25 @@
     opacity: 0.5;
     pointer-events: none;
 }
+
+
+/* History */
+
+.history {
+    background-color: #1A1A1A;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+    padding: 1px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.history .details-text {
+    color: #FFD700;
+    margin: 10px;
+}
+
+.history-title:hover {
+    color: #FFD700;
+    cursor: pointer;
+    transition: color .3s ease-in-out;
+}

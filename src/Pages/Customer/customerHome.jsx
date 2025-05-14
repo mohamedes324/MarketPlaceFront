@@ -3,13 +3,12 @@ import Navbar from "../../Components/Navbar";
 import Sidebar from "../../Components/sidebar";
 import styles from "./customerHome.module.css";
 import Product from "../../Components/Product";
-import Alert from "../../Components/alert";
 import * as FaIcons from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import EditVendor from "../../Components/EditVendor";
 import * as Functions from "../../Components/Functions";
 import Popup from "../../Components/Popup";
 import * as APIs from "../../../services/productService.js";
+import ViewDetailsButton from "../../Components/productIcons/ViewDetilesButton.jsx";
 
 const CustomerHome = () => {
   const [products, setProducts] = useState([]);
@@ -25,22 +24,21 @@ const CustomerHome = () => {
     const fetchAcceptedProducts = async () => {
       try {
         const res = await APIs.get(APIs.endpoints.getAcceptProducts);
-        setProducts(res.data)
+        setProducts(res.data);
       } catch (err) {
         console.log(err);
       }
     };
 
     fetchAcceptedProducts();
-  },[]);
+  }, []);
 
-  
   // this use new APIs.get and best practice
   const fetchSavedProducts = async () => {
     try {
-      const res = await APIs.get(APIs.endpoints.getSavedProducts)
+      const res = await APIs.get(APIs.endpoints.getSavedProducts);
 
-      console.log(res.data)
+      console.log(res.data);
       setSavedProducts(res.data);
     } catch (error) {
       console.error("Error fetching saved products:", error);
@@ -55,14 +53,12 @@ const CustomerHome = () => {
     return (
       <Product key={product.id} product={product}>
         <div className="product-buttons">
-          <button
-            title="View Detiles"
-            onClick={() => {
-              handleViewButton(product);
+          <ViewDetailsButton
+            handleViewButton={() => {
+              Functions.handleViewButton(product, navigate, setPopup);
             }}
-          >
-            <FaIcons.FaEye />
-          </button>
+            product={product}
+          />{" "}
           {product.isSaved ? (
             <button
               onClick={() => handleRemoveFromSaved(product.id)}
@@ -78,51 +74,18 @@ const CustomerHome = () => {
               <FaIcons.FaRegHeart />
             </button>
           )}
-
-          <button title="History">
-            <FaIcons.FaHistory />{" "}
-          </button>
         </div>
-    
       </Product>
     );
   });
 
-  async function handleViewButton(product) {
-    try {
-      const response = await fetch(
-        `http://localhost:5161/api/Products/views/${product.id}`,
-        {
-          method: "POST",
-        }
-      );
 
-      if (!response.ok) {
-        throw new Error("Failed to increase views");
-      }
-
-      navigate("/ViewDetails", { state: { product } });
-    } catch (error) {
-      Functions.showPopupWithoutReload(
-        `Something went wrong while updating views : ${error}`,
-        setPopup
-      );
-    }
-  }
-
+  
+  // APIs.post
   const handleAddToSaved = async (productId) => {
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch(
-        `http://localhost:5161/api/SavedProducts/${productId}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+      const response = await APIs.post(
+        `${APIs.endpoints.postSavedProducts}${productId}`
       );
 
       if (!response.ok) {
@@ -134,14 +97,13 @@ const CustomerHome = () => {
           product.id === productId ? { ...product, isSaved: true } : product
         )
       );
-      // await fetchSavedProducts();
+      await fetchSavedProducts();
     } catch (error) {
       console.error("Error adding product to saved:", error);
     }
   };
 
   const handleRemoveFromSaved = async (productId) => {
-
     const savedProduct = savedProducts.find(
       (product) => {
         return product.id === Number(productId);
@@ -160,7 +122,7 @@ const CustomerHome = () => {
         console.log("Token is missing in localStorage.");
         return;
       }
-      
+
       const response = await fetch(
         `http://localhost:5161/api/SavedProducts/${savedProduct.saveId}`, // تعديل الـ API ليتوافق مع saveId
         {
@@ -173,7 +135,6 @@ const CustomerHome = () => {
       );
 
       if (response.ok) {
-
         await fetchSavedProducts();
         // بعد الحذف، نحدث الـ UI عن طريق إزالة المنتج من state
         setSavedProducts(
@@ -199,21 +160,19 @@ const CustomerHome = () => {
     }
   };
 
-
-
   return (
     <>
       <Popup show={popup.show} message={popup.message} />
 
-        <div className={`${popup.show ? "blurred-container" : ""}`}>
-          <Navbar />
+      <div className={`${popup.show ? "blurred-container" : ""}`}>
+        <Navbar />
 
-          <div className={styles["sidebar-and-main"]}>
-            <Sidebar />
+        <div className={styles["sidebar-and-main"]}>
+          <Sidebar />
 
-            <div className={styles.main}>{productsArray}</div>
-          </div>
+          <div className={styles.main}>{productsArray}</div>
         </div>
+      </div>
     </>
   );
 };

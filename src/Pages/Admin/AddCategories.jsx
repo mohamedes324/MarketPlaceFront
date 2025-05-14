@@ -4,38 +4,28 @@ import Navbar from "../../Components/Navbar";
 import Sidebar from "../../Components/sidebar";
 import * as Functions from "../../Components/Functions";
 import Popup from "../../Components/Popup";
+import * as APIs from "../../../services/productService.js";
 
 const AddCategories = () => {
   const [categoryName, setCategoryName] = useState("");
   const [categoryImage, setCategoryImage] = useState(null);
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
 
+  // APIs.post 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!categoryImage) {
-      alert("Please select an image.");
-      return;
-    }
 
     const formData = new FormData();
     formData.append("Name", categoryName);
     formData.append("Image", categoryImage);
-
     try {
-      const response = await fetch("http://localhost:5161/api/Categories", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: formData,
-      });
+      const response = await APIs.post(APIs.endpoints.postCategories,formData,true)
 
-      const text = await response.text();
+      const text = await response.data; 
 
       if (response.ok) {
-        Functions.showPopupWithReload(
-          "Category added successfully!✅",
+        Functions.showPopupWithoutReload(
+          `${response.data.message} ✅`,
           setPopup
         );
       } else {

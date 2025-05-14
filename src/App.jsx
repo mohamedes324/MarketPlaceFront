@@ -17,6 +17,8 @@ import AllCategories from "./Pages/AllCategories";
 import ProductsOfCategory from "./Pages/productsOfCategory";
 import CompletedOrders from "./Pages/Customer/CompletedOrders";
 import WaitingAccounts from "./Pages/Admin/WaitingAccounts";
+import SearchPage from "./Pages/searchPage";
+import CompletedOrderProducts from "./Pages/CompletedOrderProducts";
 
 function App() {
   return (
@@ -39,6 +41,8 @@ function App() {
         <Route path="/ViewDetails" element={<ViewDetails />} />
         <Route path="/CompletedOrders" element={<CompletedOrders />} />
         <Route path="/WaitingAccounts" element={<WaitingAccounts />} />
+        <Route path="/SearchPage" element={<SearchPage />} />
+        <Route path="/CompletedOrderProducts" element={<CompletedOrderProducts />} />
       </Routes>
   );
 }

@@ -26,8 +26,6 @@ const AddProduct = () => {
       try {
         const res = await APIs.get(APIs.endpoints.getCategories)
 
-        console.log(res)
-
         const data = await res.data;
         setCategories(data);
       } catch (error) {
@@ -52,6 +50,7 @@ const AddProduct = () => {
     }
   };
 
+  // APIs.post 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -64,19 +63,15 @@ const AddProduct = () => {
     formData.append("categoryId", productData.categoryId);
 
     try {
-      const response = await fetch("http://localhost:5161/api/Products", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: formData,
-      });
+      const response = await APIs.post(APIs.endpoints.postProducts , formData , true)
 
       if (response.ok) {
         Functions.showPopupWithReload(
           "✅Product added successfully!",
           setPopup
         ); 
+      } else if (!response.ok){
+        console.error(response.data.message)
       } else {
         Functions.showPopupWithoutReload(
           "You Don't Have The Approval To Add Product",

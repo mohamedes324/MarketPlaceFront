@@ -15,10 +15,24 @@
 }
 
 .left-side {
+    position: relative;
+}
+
+.img {
     width: 50%;
     height: 90vh;
     object-fit: cover;
     border-radius: 10px;
+    cursor: pointer;
+}
+
+.chang-button{
+    position: absolute;
+    border-radius: 10px;
+    padding: 5px;
+    width: 20%;
+    font-size: 18px;
+    left: 0;
 }
 
 .right-side {

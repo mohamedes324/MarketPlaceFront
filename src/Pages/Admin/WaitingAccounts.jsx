@@ -30,7 +30,7 @@ const WaitingAccounts = () => {
         if (!res.ok) {
           throw new Error("Failed to fetch vendors");
         }
-  
+        console.log(res)
         setVendors(res.data);
       } catch (error) {
         console.error("Error fetching vendors:", error);
@@ -50,7 +50,9 @@ const WaitingAccounts = () => {
       status: 1,
     };
 
-    try {
+    try { 
+      
+      // I don't make APIs to it 
       const res = await fetch(url, {
         method: "PATCH",
         headers: {

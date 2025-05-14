@@ -41,26 +41,22 @@ const WaitingProducts = () => {
 
   //  functions
   async function handleViewButton(product) {
-    try {
-      const response = await fetch(
-        `http://localhost:5161/api/Products/views/${product.id}`,
-        {
-          method: "POST",
+      try {
+        const response = await APIs.post(`${APIs.endpoints.postViewProduct}${product.id}`)
+  
+        // المفروض انو بيرجع علي هيئة نص عادي
+        if (!response.ok) {
+          throw new Error(`${response.data}`);
         }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to increase views");
+  
+        navigate("/ViewDetails", { state: { product } });
+      } catch (error) {
+        Functions.showPopupWithoutReload(
+          `Something went wrong while updating views : ${error}`,
+          setPopup
+        );
       }
-
-      navigate("/ViewDetails", { state: { product } });
-    } catch (error) {
-      Functions.showPopupWithoutReload(
-        `Something went wrong while updating views : ${error}`,
-        setPopup
-      );
     }
-  }
 
   function handleDeleteButton(id) {
     setShowAlert({ status: true, type: "delete", productId: id });

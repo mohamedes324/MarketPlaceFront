@@ -1,4 +1,9 @@
-dotnet run -> in the folder of backend
+appsettings.json -------> "DefaultConnection": "Server=DESKTOP-2U83RQS\\SQLEXPRESS;Database=Marketplace;Trusted_Connection=True;encrypt=false;"
 
+in backend file --------> dotnet ef database update
 
-http://localhost:5161/swagger/index.html
+in the folder of backend ----------> ( dotnet run ) or  ( dotnet run --urls=http://localhost:5161 )
+
+swagger --------> http://localhost:5161/swagger/index.html
+
+React vite -> npm run dev

@@ -1,0 +1,7 @@
+.orderItem-info {
+    color: #FFD700;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

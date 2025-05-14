@@ -113,10 +113,10 @@ const ManagePermissions = () => {
       return;
     }
 
-    const token = localStorage.getItem("token");
 
     try {
       const permissionsToProcess = [...formData.permissions];
+      const token = Functions.getToken()
 
       const requests = permissionsToProcess.map(async (permissionName) => {
         const permission = allPermissions.find(
@@ -133,18 +133,8 @@ const ManagePermissions = () => {
             vendorId: formData.vendorId,
             permissionId: permission.id,
           };
-
-          const response = await fetch(
-            "http://localhost:5161/api/VendorPermissions",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify(payload),
-            }
-          );
+          // use APIs.post 
+          const response = await APIs.post(APIs.endpoints.postVendorPermissions,payload)
 
           if (!response.ok) {
             throw new Error(`Failed to add permission ${permissionName}`);
@@ -187,16 +177,11 @@ const ManagePermissions = () => {
         setPopup
       );
 
-      const updated = await fetch(
-        `http://localhost:5161/api/VendorPermissions/${formData.vendorId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // this use APIs.get 
+      const endpoint = APIs.endpoints.getVendorPermissions(formData.vendorId)
+      const updated = await APIs.get(endpoint)
 
-      const newPermissions = updated.ok ? await updated.json() : [];
+      const newPermissions = updated.ok ? updated.data : [];
       setVendorPermissions(newPermissions);
       setFormData({ ...formData, permissions: [] });
     } catch (error) {

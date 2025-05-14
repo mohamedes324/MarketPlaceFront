@@ -13,7 +13,6 @@ function Login() {
   const navigate = useNavigate();
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
 
-  // متابعة البيانات في الـ form
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -34,12 +33,12 @@ function Login() {
       });
 
       const data = await response.json();
-      console.log(data)
+      console.log(data);
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("refreshToken", data.refreshToken);
-        // Functions.startAutoRefresh();
+        Functions.startAutoRefresh();
 
         const decodedToken = JSON.parse(atob(data.token.split(".")[1])); // فك التوكن للحصول على الـ role
         const role =
@@ -79,7 +78,8 @@ function Login() {
               } else if (vendorData.approvalStatus === 1) {
                 navigate("/vendorHome");
               } else if (vendorData.approvalStatus === 2) {
-                const message = "❌Your account has been rejected.";
+                const message = `❌Your account has been rejected:
+                                  ${vendorData.rejectionReason}`;
                 Functions.showPopupWithoutReload(message, setPopup);
                 localStorage.removeItem("token");
 

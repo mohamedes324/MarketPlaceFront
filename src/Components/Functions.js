@@ -1,46 +1,45 @@
 // import * as Functions from "/Components/Functions.js"
+import * as APIs from '../../services/productService';
 
+export const startAutoRefresh = () => {
+    const refresh = async () => {
+        const refreshToken = localStorage.getItem("refreshToken");
 
-// export const startAutoRefresh = () => {
-//     const refresh = async () => {
-//         const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) {
+            console.warn("No refresh token found.");
+            return;
+        }
 
-//         if (!refreshToken) {
-//             console.warn("No refresh token found.");
-//             return;
-//         }
+        try {
+            const response = await fetch("http://localhost:5161/api/Auth/refresh-token", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(refreshToken),
+            });
 
-//         try {
-//             const response = await fetch("http://localhost:5161/api/Auth/refresh-token", {
-//                 method: "POST",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                 },
-//                 body: JSON.stringify(refreshToken),
-//             });
+            if (response.ok) {
+                const data = await response.json();
 
-//             if (response.ok) {
-//                 const data = await response.json();
-            
-//                 if (data.token && data.refreshToken) {
-//                     localStorage.setItem("token", data.token);
-//                     localStorage.setItem("refreshToken", data.refreshToken);
-//                     console.log("🔁 Tokens refreshed and saved.");
-//                 } else {
-//                     console.warn("⚠️ Response missing token or refreshToken:", data);
-//                 }
-//             } else {
-//                 console.error("❌ Refresh token request failed with status:", response.status);
-//             }
+                if (data.token && data.refreshToken) {
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("refreshToken", data.refreshToken);
+                    console.log("🔁 Tokens refreshed and saved.");
+                } else {
+                    console.warn("⚠️ Response missing token or refreshToken:", data);
+                }
+            } else {
+                console.error("❌ Refresh token request failed with status:", response.status);
+            }
 
-//         } catch (error) {
-//             console.error("🔴 Error refreshing token:", error);
-//         }
-//     };
+        } catch (error) {
+            console.error("🔴 Error refreshing token:", error);
+        }
+    };
 
-//     // كل دقيقة (60,000 ملي ثانية)
-//     setInterval(refresh, 60 * 1000);
-// };
+    setInterval(refresh, 120 * 60 * 1000);
+};
 
 export const getToken = () => {
 
@@ -67,7 +66,6 @@ export const getUserRole = () => {
     return role;
 };
 
-
 export const getUserId = () => {
     const token = localStorage.getItem("token");
     let userId = null;
@@ -87,6 +85,8 @@ export const getUserId = () => {
     return userId;
 };
 
+// ------------------------------------------------------------------------------
+// popup
 export const showPopupWithoutReload = (data, setPopup) => {
     const message = typeof data === "string"
         ? data
@@ -108,7 +108,8 @@ export const showPopupWithReload = (data, setPopup) => {
     }, 3000);
 };
 
-
+// -----------------------------------------------------------------------------
+// convert from date to time
 export function timeAgo(dateString) {
     // تحويل السلسلة إلى كائن Date
     const dateUTC = new Date(dateString);
@@ -145,5 +146,85 @@ export function timeAgo(dateString) {
     }
 
     return "just now";
+}
+
+// -----------------------------------------------------------------------------
+// handle Product Buttons general
+export async function handleViewButton(product, navigate, setPopup) {
+    try {
+        const endpoint = APIs.endpoints.postViewProduct(product.id)
+      const response = await APIs.post(
+            `${endpoint}`
+        );
+
+        if (!response.ok) {
+            throw new Error(`${response.data}`);
+        }
+
+        navigate("/ViewDetails", { state: { product } });
+    } catch (error) {
+        showPopupWithoutReload(
+            `Something went wrong while updating views : ${error}`,
+            setPopup
+        );
+    }
+}
+
+export   async function handleHistoryButton(productId , setPopup, setHistory , setShowAlert) {
+    const endpoint = APIs.endpoints.getProductHistory(productId);
+    const res = await APIs.get(endpoint);
+
+    if (res.status === 403) {
+      showPopupWithoutReload("You don't have the approval", setPopup);
+      return;
+    } else if (!res.ok) {
+      showPopupWithoutReload(res.data, setPopup);
+      return;
+    }
+    setHistory(res.data);
+    setShowAlert({ status: true, type: "history", productId: productId });
+  }
+
+//---------------------------------------------------------------------------------
+// handle Product Buttons vendor
+export function handleDeleteVendorButton(product, vendorPermissions, setPopup, setShowAlert) {
+    const hasDeletePermission = vendorPermissions.some(
+        (p) => p.permissionId === 4
+    );
+
+    if (hasDeletePermission) {
+
+        setShowAlert({ status: true, type: "delete", productId: product.id });
+    } else {
+
+        showPopupWithoutReload(
+            "You don't have the approval to Delete",
+            setPopup
+        );
+    }
+}
+
+export function handleEditVendorButton(product, vendorPermissions, setPopup, setShowAlert, setFormData) {
+    const hasEditPermission = vendorPermissions.some(
+        (p) => p.permissionId === 3
+    ); // 3 = edit permission ID
+    if (!hasEditPermission) {
+        setShowAlert({ status: true, type: "edit" });
+        showPopupWithoutReload(
+            "You don't have the approval to Edit",
+            setPopup
+        );
+        return;
+    }
+    setFormData({
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        quantity: product.quantity,
+        categoryId: product.categoryId,
+    });
+
+    setShowAlert({ status: true, type: "edit", productId: product.id });
 }
 

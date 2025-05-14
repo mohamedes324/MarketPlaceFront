@@ -1,0 +1,42 @@
+.priceRangeContainer {
+    display: block;
+    width: 100%;
+    margin: 10px;
+}
+
+.priceRangeBox {
+    width: 50%;
+    margin: auto;
+    text-align: center;
+    background-color: #1A1A1A;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.priceRangeTitle {
+    color: #FFD700;
+    margin-bottom: 16px;
+}
+
+.priceRangeText {
+    color: #B8902D;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.priceSlider :global(.MuiSlider-thumb) {
+    background-color: #FFD700;
+}
+
+.priceSlider :global(.MuiSlider-track) {
+    background-color: #D4AF37;
+}
+
+.priceSlider :global(.MuiSlider-rail) {
+    background-color: #444;
+}
+
+.priceSlider :global(.MuiSlider-markLabel) {
+    color: #B8902D;
+}
